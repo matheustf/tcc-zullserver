@@ -25,7 +25,15 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        //RequestContext ctx = RequestContext.getCurrentContext();
+    	RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        
+        //String token = request.getHeader("x-access-token");
+        
+        String previousUri = request.getRequestURI();
+        if(previousUri.contains("oauth")) {
+        	return false;
+        }
 
         return true;
     }
@@ -41,7 +49,7 @@ public class AuthHeaderFilter extends ZuulFilter {
         
         if (StringUtils.isNotBlank(token) && previousUri != null) {
         	
-        	boolean permission = PermissionCheck.verifyToken(token);
+        	boolean permission = PermissionCheck.verifyToken(previousUri, token);
 
         	if(!permission) {
         		 ctx.setResponseStatusCode(401);

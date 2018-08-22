@@ -1,37 +1,52 @@
 package com.puc.tcc.zuulserver.http;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
-import org.springframework.http.HttpEntity;
+import org.apache.http.Header;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class PermissionCheck {
 
-	public static boolean verifyToken(String token) {
+	public static boolean verifyToken(String path, String token) {
+		try {
+			final String uri = "http://localhost:9090/oauth".concat(path);
 
-		{
-			final String uri = "http://localhost:9090/oauth";
+			 CloseableHttpClient client = HttpClients.custom().build();
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			headers.set("x-access-token", token);
-			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+		        HttpUriRequest request = RequestBuilder.get()
+		                .setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+		                .setHeader("x-access-token", token)
+		                .build();
 
-			RestTemplate restTemplate = new RestTemplate();
+		        CloseableHttpResponse response;
+				
+					response = client.execute(request);
+					
+			        List<Header> httpHeaders = Arrays.asList(response.getAllHeaders());
+			        httpHeaders.stream().forEach(System.out::println);
+			        
+			        if(response.getStatusLine().getStatusCode() == 200) {
+			        	return true;
+			        }
+				
+				} catch (Exception e) {
+					//TODO Criar excpetion
+					return false;
+				}
+			
 
-			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
-
-			System.out.println(result);
-
-			return result.getStatusCode().equals(HttpStatus.OK);
-		}
+			return false; //result.getStatusCode().equals(HttpStatus.OK);
 	}
 
 }
