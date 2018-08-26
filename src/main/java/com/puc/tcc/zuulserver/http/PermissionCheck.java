@@ -1,33 +1,35 @@
 package com.puc.tcc.zuulserver.http;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.Header;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import com.netflix.zuul.exception.ZuulException;
 
 @Component
 public class PermissionCheck {
 
-	public static boolean verifyToken(String path, String token) {
+	public static boolean verifyToken(String path, String token) throws ZuulException {
 		try {
 			final String uri = "http://localhost:9090/oauth".concat(path);
 
 			 CloseableHttpClient client = HttpClients.custom().build();
 
 		        HttpUriRequest request = RequestBuilder.get()
+		                .setUri(uri)
 		                .setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 		                .setHeader("x-access-token", token)
 		                .build();
+		        
 
 		        CloseableHttpResponse response;
 				
@@ -41,12 +43,10 @@ public class PermissionCheck {
 			        }
 				
 				} catch (Exception e) {
-					//TODO Criar excpetion
-					return false;
+					throw new ZuulException(HttpStatus.INTERNAL_SERVER_ERROR.toString(), 500, "Problema no servidor. Tente conectar mais tarde");
 				}
-			
 
-			return false; //result.getStatusCode().equals(HttpStatus.OK);
+			return false;
 	}
 
 }
