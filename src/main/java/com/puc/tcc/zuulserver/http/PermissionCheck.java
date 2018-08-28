@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.netflix.zuul.exception.ZuulException;
-import com.puc.tcc.zuulserver.config.env.BatchConfiguration;
+import com.puc.tcc.zuulserver.conf.BatchConfiguration;
 
 @Component
 public class PermissionCheck {
