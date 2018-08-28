@@ -9,18 +9,30 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.netflix.zuul.exception.ZuulException;
+import com.puc.tcc.zuulserver.config.env.BatchConfiguration;
 
 @Component
 public class PermissionCheck {
+	
+	static BatchConfiguration batchConfiguration;
+	
+	@Autowired
+	public PermissionCheck(BatchConfiguration batchConfiguration) {
+		PermissionCheck.batchConfiguration = batchConfiguration;
+	}
 
 	public static boolean verifyToken(String path, String token) throws ZuulException {
 		try {
-			final String uri = "http://localhost:9090/oauth".concat(path);
+			
+			String urlOAuth = batchConfiguration.getProperty("urlOAuth");
+			
+			String uri = urlOAuth + "/oauth".concat(path);
 
 			 CloseableHttpClient client = HttpClients.custom().build();
 
