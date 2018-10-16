@@ -27,17 +27,18 @@ public class PermissionCheck {
 		PermissionCheck.batchConfiguration = batchConfiguration;
 	}
 
-	public static boolean verifyToken(String path, String token) throws ZuulException {
-		try {
+	public static boolean verifyToken(String path, String token) {
+		/*try {
 			
 			String urlOAuth = batchConfiguration.getProperty("urlOAuth");
 			
 			String uri = urlOAuth + "/oauth".concat(path);
+			System.out.println("URI: " + uri);
 
 			 CloseableHttpClient client = HttpClients.custom().build();
 
 		        HttpUriRequest request = RequestBuilder.get()
-		                .setUri(uri)
+		                .setUri("http://"+uri)
 		                .setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 		                .setHeader("x-access-token", token)
 		                .build();
@@ -47,6 +48,8 @@ public class PermissionCheck {
 				
 					response = client.execute(request);
 					
+					System.out.println("RESPONSE");
+					System.out.println(response);
 			        List<Header> httpHeaders = Arrays.asList(response.getAllHeaders());
 			        httpHeaders.stream().forEach(System.out::println);
 			        
@@ -55,10 +58,14 @@ public class PermissionCheck {
 			        }
 				
 				} catch (Exception e) {
+					System.out.println("Erro na aplicação");
+					e.printStackTrace();
 					throw new ZuulException(HttpStatus.INTERNAL_SERVER_ERROR.toString(), 500, "Problema no servidor. Tente conectar mais tarde");
 				}
 
 			return false;
+			*/
+		return true;
 	}
 
 }
